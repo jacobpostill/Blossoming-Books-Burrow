@@ -23,8 +23,8 @@ const SavedBooks = () => {
       return false;
     }
     try {
-      const { data } = await removeBook({variables:{bookId}});
-      if (!data) {
+      const { response } = await removeBook({variables:{bookId}});
+      if (!response) {
         throw new Error('something went wrong!');
       }
       removeBookId(bookId);
