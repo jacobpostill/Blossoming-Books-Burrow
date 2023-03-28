@@ -1,5 +1,5 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { User, Thought } = require('../models');
+const { User, Book } = require('../models');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
@@ -26,13 +26,15 @@ const resolvers = {
   },
 
   Mutation: {
-    addUser: async (parent, { username, email, password }) => {
+    addUser: async (parent, { username, email, password }, contextt) => {
       const user = await User.create({ username, email, password });
+      if (!user) {
+        throw new Error('Something is wrong!');}
       const token = signToken(user);
       return { token, user };
     },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
+    login: async (parent, { email, username, password }) => {
+      const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
 
       if (!user) {
         throw new AuthenticationError('No user found with this email address');

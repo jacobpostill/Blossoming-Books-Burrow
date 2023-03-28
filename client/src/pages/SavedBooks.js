@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Card,
-  Button,
-  Row,
-  Col
-} from 'react-bootstrap';
+import React from 'react';
+import {Container, Card, Button, Row,Col} from 'react-bootstrap';
 
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
@@ -15,10 +9,11 @@ import { GET_ME } from "../utils/queries";
 
 
 
+
 const SavedBooks = () => {
-  const { loading, data } = useQuery(GET_ME);
-  const userData = data?.me || {};
-  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
+  const { loading, data:yieldMe } = useQuery(GET_ME);
+  const userData = yieldMe?.me || {};
+  const [removeBook] = useMutation(REMOVE_BOOK, {refetchQueries: [{ query: GET_ME }]});
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -27,11 +22,9 @@ const SavedBooks = () => {
     if (!token) {
       return false;
     }
-
     try {
-      const response = await removeBook({variables: { bookId: bookId },});
-
-      if (!response.ok) {
+      const { data } = await removeBook({variables:{bookId}});
+      if (!data) {
         throw new Error('something went wrong!');
       }
       removeBookId(bookId);
@@ -49,17 +42,17 @@ const SavedBooks = () => {
     <>
       <div fluid className="text-light bg-dark p-5">
         <Container>
-          <h1>Viewing saved books!</h1>
+          <h1>{`Viewing ${yieldMe ? yieldMe.me.username+"'s" : ""} saved books!`}</h1>
         </Container>
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
+          {userData.savedBooks && userData.savedBooks.length
             ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {yieldMe.me.savedBooks && yieldMe.me.savedBooks.map((book) => {
             return (
               <Col md="4">
                 <Card key={book.bookId} border='dark'>

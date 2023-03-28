@@ -1,16 +1,20 @@
+
 import { gql } from '@apollo/client';
 
-export const LOGIN = gql`
+export const LOGIN_USER = gql`
   mutation login(
-    $email: String! 
+    $email: String!,
     $password: String!
-  ) {
-    login(email: $email, password: $password) {
+    ) {
+    login(
+      email: $email,
+      password: $password
+      ) {
       token
       user {
         username
-        email 
         bookCount
+        email 
       }
     }
   }
@@ -18,36 +22,50 @@ export const LOGIN = gql`
 
 export const ADD_USER = gql`
   mutation addUser(
-    $username: String!
-    $email: String!
+    $username: String!,
+    $email: String!,
     $password: String!
-  ) {
+    ) {
     addUser(
-      $username: String!
+      username: $username 
       email: $email
       password: $password
     ) {
       token
       user {
         username
+        bookCount
         email 
-        bookCount   
       }
     }
   }
 `;
 
 export const SAVE_BOOK = gql`
-  mutation saveBook($bookId: String!, $title: String!, $description: String!, $authors: [String], $image: String, $link: String) {
-    saveBook( bookId: $bookId, title: $title, description: $description, authors: $authors, image: $image, link: $link) {
-      username
+  mutation saveBook(
+    $bookId: String!,
+    $title: String!,
+    $authors: [String],
+    $image: String,
+    $description: String!,
+    $link: String
+  ) {
+    saveBook(
+      bookId: $bookId, 
+      title: $title, 
+      authors: $authors,
+      image: $image,
+      description: $description,
+      link: $link
+    ) {
       email
+      username
       bookCount
       savedBooks {
         bookId
-        authors
         description
         title
+        authors
         image
         link
       }
@@ -56,15 +74,19 @@ export const SAVE_BOOK = gql`
 `;
 
 export const REMOVE_BOOK = gql`
-  mutation removeBook($bookId: String!) {
-    removeBook(bookId: $bookId) {
-      username
+  mutation removeBook(
+    $bookId: String!
+    ) {
+    removeBook(
+      bookId: $bookId
+      ) {
       email
+      username
       bookCount
       savedBooks {
-        bookId
         authors
         description
+        bookId
         title
         image
         link
