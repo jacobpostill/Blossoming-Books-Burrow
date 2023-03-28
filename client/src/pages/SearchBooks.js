@@ -71,11 +71,16 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
-    try {const data = await saveBook({
-          variables: { ...bookToSave },
-        });
-    if (!data) {
-        throw new Error("something went wrong!");}
+
+    try {
+      const response = await saveBook({
+        variables: { input: bookToSave },
+      });
+
+      if (!response) {
+        throw new Error("something went wrong!");
+      }
+
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
@@ -135,18 +140,17 @@ const SearchBooks = () => {
                   <Card.Text>{book.description}</Card.Text>
                   {Auth.loggedIn() && (
                     <Button
-                      disabled={savedBookIds?.some(
-                        (savedBookId) => savedBookId === book.bookId
-                      )}
-                      className="btn-block btn-info"
-                      onClick={() => {console.log('book is'+book.bookId);
-                        return handleSaveBook(book.bookId)}}
-                    >
-                      {savedBookIds?.some(
-                        (savedBookId) => savedBookId === book.bookId
-                      )
-                        ? "This book has already been saved!"
-                        : "Save this Book!"}
+                    disabled={savedBookIds?.some(
+                      (savedBookId) => savedBookId === book.bookId
+                    )}
+                    className="btn-block btn-info"
+                    onClick={() => handleSaveBook(book.bookId)}
+                  >
+                    {savedBookIds?.some(
+                      (savedBookId) => savedBookId === book.bookId
+                    )
+                      ? "This book has already been saved!"
+                      : "Save this Book!"}
                     </Button>
                   )}
                 </Card.Body>

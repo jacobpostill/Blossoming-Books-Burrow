@@ -51,22 +51,18 @@ const resolvers = {
       return { token, user };
     },
     saveBook: async (parent, body, context) => {
-        try {
-            console.log('bookadd');
-            console.log(context.user);
-            const updatedUser = await User.findOneAndUpdate(
+        if (context.user) {
+            const updatedUser = await User.findByIdAndUpdate(
               { _id: context.user._id },
-              { $addToSet: { savedBooks: body } },
+              { $addToSet: { savedBooks: input } },
               { new: true, runValidators: true }
             );
-       
-            console.log(updatedUser);
             return updatedUser;
-          } catch (err) {
-            console.log(err);
-            throw new Error('Something is wrong with the user!'); 
           }
+    
+          throw new AuthenticationError("You need to be logged in!");
         },
+    
     removeBook: async (parent,  {bookId} , context) => {
         if (context.user) {
           console.log('inremove');
